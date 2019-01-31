@@ -2,7 +2,6 @@ package ru.hh.school.employers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.hibernate.ReplicationMode;
 import org.junit.Test;
 import java.util.List;
 
@@ -23,11 +22,7 @@ public class ReturnToManagedStateTest extends EmployerTest {
     employers.forEach(Employer::calculateBonusPoints);
 
     doInTransaction(
-      () -> {
-        for (Employer employer : employers) {
-          getSession().replicate(employer, ReplicationMode.OVERWRITE);
-        }
-      }
+      () -> employers.forEach(getSession()::merge)
     );
 
     assertTrue(getAllBonusPointsFromDb() > 0);
